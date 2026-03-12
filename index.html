@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>⭐ Chore Champions!</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sam:#4A90D9; --sam-dark:#2c6fad;
+    --indy:#E85D9A; --indy-dark:#b83d76;
+    --green:#4CAF50; --purple:#7B5EA7;
+    --bg:#F7F3FF; --muted:#888;
+    --radius:20px; --shadow:0 4px 20px rgba(0,0,0,0.10);
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    font-family:'Nunito',sans-serif;
+    background:var(--bg);
+    background-image:radial-gradient(circle at 20% 20%,#e8d5ff 0%,transparent 50%),
+                     radial-gradient(circle at 80% 80%,#ffd6ec 0%,transparent 50%);
+    min-height:100vh; color:#2d2d2d; overflow-x:hidden;
+  }
+  h1,h2,h3 { font-family:'Fredoka One',cursive; }
+
+  .header { text-align:center; padding:24px 20px 12px; position:relative; }
+  .header h1 {
+    font-size:2.4rem;
+    background:linear-gradient(135deg,#7B5EA7,#E85D9A,#4A90D9);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+  .date-badge {
+    display:inline-block; margin-top:6px; background:white; border-radius:30px;
+    padding:5px 18px; font-size:0.95rem; font-weight:700; color:var(--purple);
+    box-shadow:0 2px 10px rgba(0,0,0,0.08);
+  }
+  .admin-btn {
+    position:absolute; top:24px; right:16px; background:white; border:none;
+    border-radius:50px; padding:8px 16px; font-family:'Nunito',sans-serif;
+    font-weight:700; font-size:0.85rem; cursor:pointer;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1); color:var(--purple);
+  }
+
+  .time-tabs { display:flex; justify-content:center; gap:10px; padding:10px 20px; flex-wrap:wrap; }
+  .time-tab {
+    background:white; border:3px solid transparent; border-radius:50px; padding:10px 22px;
+    font-family:'Nunito',sans-serif; font-weight:800; font-size:1rem;
+    cursor:pointer; transition:all 0.2s; box-shadow:0 2px 8px rgba(0,0,0,0.08);
+  }
+  .time-tab.active { background:var(--purple); color:white; border-color:var(--purple); }
+  .time-tab:not(.active):hover { border-color:var(--purple); }
+
+  .kids-grid {
+    display:grid; grid-template-columns:1fr 1fr; gap:16px;
+    padding:8px 16px 110px; max-width:900px; margin:0 auto;
+  }
+  .kid-card { background:white; border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+
+  .kid-header { padding:18px 20px 14px; display:flex; align-items:center; gap:12px; }
+  .kid-header.sam { background:linear-gradient(135deg,#4A90D9,#6aaae8); }
+  .kid-header.indy { background:linear-gradient(135deg,#E85D9A,#f07dba); }
+  .kid-avatar {
+    width:52px; height:52px; border-radius:50%; background:rgba(255,255,255,0.3);
+    display:flex; align-items:center; justify-content:center; font-size:1.8rem; flex-shrink:0;
+  }
+  .kid-name { color:white; font-size:1.6rem; flex:1; }
+  .kid-stars {
+    color:white; font-size:0.9rem; font-weight:800;
+    background:rgba(255,255,255,0.25); border-radius:20px; padding:4px 12px; white-space:nowrap;
+  }
+
+  .progress-wrap { padding:10px 16px 0; background:white; }
+  .progress-bar-bg { background:#eee; border-radius:10px; height:10px; overflow:hidden; }
+  .progress-bar-fill { height:100%; border-radius:10px; transition:width 0.4s ease; }
+  .sam .progress-bar-fill { background:linear-gradient(90deg,#4A90D9,#6aaae8); }
+  .indy .progress-bar-fill { background:linear-gradient(90deg,#E85D9A,#f07dba); }
+  .progress-label { font-size:0.8rem; font-weight:700; color:var(--muted); padding:4px 0 8px; text-align:right; }
+
+  .chore-list { padding:8px 12px 16px; }
+  .section-label {
+    font-size:0.72rem; font-weight:800; text-transform:uppercase; letter-spacing:1px;
+    color:var(--muted); margin:10px 4px 5px;
+  }
+
+  .chore-item {
+    display:flex; align-items:center; gap:12px; padding:11px 12px;
+    border-radius:14px; margin-bottom:5px; cursor:pointer;
+    transition:all 0.2s; border:2px solid transparent;
+    background:#fafafa; user-select:none; -webkit-tap-highlight-color:transparent;
+  }
+  .chore-item:active { transform:scale(0.97); }
+  .chore-item.done { background:#f0fdf4; border-color:#bbf7d0; }
+  .chore-item.bonus { background:#faf5ff; border-color:#e9d5ff; }
+  .chore-item.bonus.done { background:#f0fdf4; border-color:#bbf7d0; }
+  .chore-item.bonus.pending { background:#fef9c3; border-color:#fde047; animation:pulse 1.5s infinite; }
+  .chore-item.extra { background:#fffbeb; border-color:#fde68a; }
+  .chore-item.extra.done { background:#f0fdf4; border-color:#bbf7d0; }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.65} }
+
+  .chore-check {
+    width:32px; height:32px; border-radius:50%; border:3px solid #ddd;
+    display:flex; align-items:center; justify-content:center; font-size:1.1rem;
+    flex-shrink:0; transition:all 0.2s; background:white;
+  }
+  .chore-item.done .chore-check { background:var(--green); border-color:var(--green); animation:pop 0.3s ease; }
+  .chore-item.bonus.pending .chore-check { border-color:#eab308; background:#fef9c3; }
+  @keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.35)} 100%{transform:scale(1)} }
+
+  .chore-label { font-size:0.98rem; font-weight:700; flex:1; transition:all 0.2s; }
+  .chore-item.done .chore-label { text-decoration:line-through; color:var(--muted); }
+
+  .chore-points { font-size:0.8rem; font-weight:800; color:#f59e0b; background:#fffbeb; border-radius:20px; padding:2px 8px; flex-shrink:0; }
+  .tag {
+    font-size:0.68rem; font-weight:800; border-radius:10px; padding:2px 7px; flex-shrink:0;
+  }
+  .tag.bonus { color:#7c3aed; background:#ede9fe; }
+  .tag.extra { color:#d97706; background:#fef3c7; }
+  .tag.pending { color:#ca8a04; background:#fef9c3; }
+
+  /* Bedroom card */
+  .bedroom-card {
+    margin:10px 0 4px; border-radius:14px; overflow:hidden;
+    border:2px dashed #fbbf24; background:linear-gradient(135deg,#fffbeb,#fef3c7);
+  }
+  .bedroom-inner { display:flex; align-items:center; gap:12px; padding:13px 14px; }
+  .bedroom-icon { font-size:1.8rem; flex-shrink:0; }
+  .bedroom-text { flex:1; }
+  .bedroom-text strong { display:block; font-size:0.95rem; font-weight:800; color:#92400e; }
+  .bedroom-text span { font-size:0.78rem; color:#b45309; font-weight:600; }
+  .bedroom-btn {
+    padding:9px 14px; background:#f59e0b; color:white; border:none;
+    border-radius:12px; font-family:'Nunito',sans-serif; font-weight:800;
+    font-size:0.88rem; cursor:pointer; white-space:nowrap; flex-shrink:0;
+  }
+  .bedroom-btn.awarded { background:var(--green); }
+  .bedroom-btn:disabled { opacity:0.6; cursor:default; }
+
+  .empty-session { text-align:center; color:var(--muted); font-size:0.95rem; padding:20px; font-weight:600; }
+  .all-done { text-align:center; padding:14px; font-size:1rem; font-weight:800; color:var(--green); animation:fadeIn 0.5s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(5px)} to{opacity:1} }
+
+  .footer-bar {
+    position:fixed; bottom:0; left:0; right:0; background:white;
+    box-shadow:0 -4px 20px rgba(0,0,0,0.1); display:flex;
+    justify-content:space-around; padding:12px 20px;
+  }
+  .footer-kid { display:flex; align-items:center; gap:8px; font-weight:800; font-size:1rem; }
+  .footer-kid .dot { width:14px; height:14px; border-radius:50%; }
+  .footer-kid.sam .dot { background:var(--sam); }
+  .footer-kid.indy .dot { background:var(--indy); }
+  .footer-divider { width:1px; background:#eee; }
+
+  /* Modals */
+  .modal-overlay {
+    display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5);
+    z-index:100; align-items:center; justify-content:center; padding:20px;
+  }
+  .modal-overlay.open { display:flex; }
+  .modal {
+    background:white; border-radius:24px; padding:28px 24px; width:100%;
+    max-width:480px; box-shadow:0 20px 60px rgba(0,0,0,0.2); max-height:88vh; overflow-y:auto;
+  }
+  .modal h2 { margin-bottom:18px; color:var(--purple); font-size:1.6rem; }
+  .modal-close {
+    float:right; background:#f0f0f0; border:none; border-radius:50%;
+    width:34px; height:34px; cursor:pointer; font-size:1.1rem; line-height:34px; text-align:center;
+  }
+
+  .pin-context { text-align:center; font-size:0.88rem; font-weight:700; color:#7c3aed; background:#f3f0ff; border-radius:12px; padding:8px 12px; margin-bottom:8px; }
+  .pin-display { display:flex; justify-content:center; gap:12px; margin:16px 0; }
+  .pin-dot { width:18px; height:18px; border-radius:50%; border:3px solid var(--purple); background:transparent; transition:all 0.15s; }
+  .pin-dot.filled { background:var(--purple); }
+  .pin-pad { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; max-width:280px; margin:0 auto; }
+  .pin-key {
+    background:#f3f0ff; border:none; border-radius:16px; padding:18px;
+    font-family:'Fredoka One',cursive; font-size:1.4rem; cursor:pointer;
+    transition:all 0.15s; color:var(--purple);
+  }
+  .pin-key:active { background:var(--purple); color:white; transform:scale(0.95); }
+  .pin-error { color:#ef4444; text-align:center; font-weight:700; margin-top:10px; font-size:0.9rem; }
+
+  .admin-section { margin-bottom:20px; }
+  .admin-section h3 { font-size:1.05rem; color:#555; margin-bottom:10px; }
+  .admin-row {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 12px; background:#fafafa; border-radius:12px; margin-bottom:6px; gap:10px;
+  }
+  .admin-row span { font-weight:600; font-size:0.95rem; flex:1; }
+  .tbtn { padding:6px 14px; border-radius:20px; border:none; cursor:pointer; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.85rem; }
+  .tbtn.red { background:#fee2e2; color:#dc2626; }
+  .tbtn.green { background:#dcfce7; color:#16a34a; }
+
+  .add-form { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+  .add-form input, .add-form select {
+    flex:1; min-width:110px; padding:10px 14px;
+    border:2px solid #e5e7eb; border-radius:12px;
+    font-family:'Nunito',sans-serif; font-weight:600; font-size:0.95rem; outline:none;
+  }
+  .add-form input:focus, .add-form select:focus { border-color:var(--purple); }
+  .add-btn { padding:10px 18px; background:var(--purple); color:white; border:none; border-radius:12px; font-family:'Nunito',sans-serif; font-weight:800; cursor:pointer; font-size:0.95rem; }
+  .reset-btn { width:100%; padding:12px; background:#fee2e2; color:#dc2626; border:none; border-radius:12px; font-family:'Nunito',sans-serif; font-weight:800; cursor:pointer; font-size:1rem; margin-top:8px; }
+
+  .verify-item {
+    display:flex; align-items:center; gap:8px; padding:10px 12px;
+    background:#fef9c3; border:2px solid #fde047; border-radius:12px; margin-bottom:6px; flex-wrap:wrap;
+  }
+  .verify-item span { flex:1; font-weight:700; font-size:0.9rem; min-width:120px; }
+  .v-approve { padding:6px 12px; background:#dcfce7; color:#16a34a; border:none; border-radius:20px; cursor:pointer; font-family:'Nunito',sans-serif; font-weight:800; font-size:0.85rem; }
+  .v-deny { padding:6px 12px; background:#fee2e2; color:#dc2626; border:none; border-radius:20px; cursor:pointer; font-family:'Nunito',sans-serif; font-weight:800; font-size:0.85rem; }
+  .no-verify { color:var(--muted); font-size:0.9rem; font-weight:600; text-align:center; padding:10px; }
+
+  @media(max-width:500px) {
+    .kids-grid { grid-template-columns:1fr; }
+    .header h1 { font-size:1.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>⭐ Chore Champions!</h1>
+  <div class="date-badge" id="dateBadge"></div>
+  <button class="admin-btn" onclick="openPIN('admin')">🔐 Parent</button>
+</div>
+
+<div class="time-tabs">
+  <button class="time-tab active" onclick="setSession('morning')">🌅 Morning</button>
+  <button class="time-tab" onclick="setSession('afternoon')">🎒 Afternoon</button>
+  <button class="time-tab" onclick="setSession('evening')">🌙 Evening</button>
+</div>
+
+<div class="kids-grid">
+  <div class="kid-card">
+    <div class="kid-header sam">
+      <div class="kid-avatar">🦕</div>
+      <h2 class="kid-name">Sam</h2>
+      <div class="kid-stars" id="samStarsBadge">⭐ 0</div>
+    </div>
+    <div class="progress-wrap sam">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="samProgress" style="width:0%"></div></div>
+      <div class="progress-label" id="samProgressLabel"></div>
+    </div>
+    <div class="chore-list" id="samChores"></div>
+  </div>
+
+  <div class="kid-card">
+    <div class="kid-header indy">
+      <div class="kid-avatar">🦄</div>
+      <h2 class="kid-name">Indy</h2>
+      <div class="kid-stars" id="indyStarsBadge">⭐ 0</div>
+    </div>
+    <div class="progress-wrap indy">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="indyProgress" style="width:0%"></div></div>
+      <div class="progress-label" id="indyProgressLabel"></div>
+    </div>
+    <div class="chore-list" id="indyChores"></div>
+  </div>
+</div>
+
+<div class="footer-bar">
+  <div class="footer-kid sam"><div class="dot"></div>Sam: <span id="samTotal">⭐ 0</span></div>
+  <div class="footer-divider"></div>
+  <div class="footer-kid indy"><div class="dot"></div>Indy: <span id="indyTotal">⭐ 0</span></div>
+</div>
+
+<!-- PIN Modal -->
+<div class="modal-overlay" id="pinModal">
+  <div class="modal">
+    <button class="modal-close" onclick="cancelPin()">✕</button>
+    <h2>🔐 Parent PIN</h2>
+    <div class="pin-context" id="pinContext" style="display:none"></div>
+    <div class="pin-display">
+      <div class="pin-dot" id="pd0"></div><div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div><div class="pin-dot" id="pd3"></div>
+    </div>
+    <div class="pin-pad">
+      <button class="pin-key" onclick="pinPress('1')">1</button>
+      <button class="pin-key" onclick="pinPress('2')">2</button>
+      <button class="pin-key" onclick="pinPress('3')">3</button>
+      <button class="pin-key" onclick="pinPress('4')">4</button>
+      <button class="pin-key" onclick="pinPress('5')">5</button>
+      <button class="pin-key" onclick="pinPress('6')">6</button>
+      <button class="pin-key" onclick="pinPress('7')">7</button>
+      <button class="pin-key" onclick="pinPress('8')">8</button>
+      <button class="pin-key" onclick="pinPress('9')">9</button>
+      <button class="pin-key" onclick="pinPress('back')">⌫</button>
+      <button class="pin-key" onclick="pinPress('0')">0</button>
+      <button class="pin-key" onclick="pinPress('clear')">✕</button>
+    </div>
+    <div class="pin-error" id="pinError"></div>
+  </div>
+</div>
+
+<!-- Admin Modal -->
+<div class="modal-overlay" id="adminModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('adminModal')">✕</button>
+    <h2>⚙️ Parent Panel</h2>
+
+    <div class="admin-section">
+      <h3>⏳ Bonus Chores Awaiting Approval</h3>
+      <div id="verifyQueue"></div>
+    </div>
+
+    <div class="admin-section">
+      <h3>➕ Add Extra Chore Today</h3>
+      <div class="add-form">
+        <input type="text" id="extraLabel" placeholder="e.g. Put washing away" />
+        <select id="extraKid">
+          <option value="both">Both</option>
+          <option value="sam">Sam</option>
+          <option value="indy">Indy</option>
+        </select>
+        <select id="extraSession">
+          <option value="morning">Morning</option>
+          <option value="afternoon">Afternoon</option>
+          <option value="evening">Evening</option>
+        </select>
+        <button class="add-btn" onclick="addExtraChore()">Add</button>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h3>🌟 Total Stars</h3>
+      <div class="admin-row">
+        <span>🦕 Sam</span><strong id="adminSamTotal">0 ⭐</strong>
+        <button class="tbtn red" onclick="resetStars('sam')">Reset</button>
+      </div>
+      <div class="admin-row">
+        <span>🦄 Indy</span><strong id="adminIndyTotal">0 ⭐</strong>
+        <button class="tbtn red" onclick="resetStars('indy')">Reset</button>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h3>🔑 Change PIN</h3>
+      <div class="add-form">
+        <input type="password" id="newPIN" placeholder="New 4-digit PIN" maxlength="4" inputmode="numeric" />
+        <button class="add-btn" onclick="changePIN()">Save</button>
+      </div>
+    </div>
+
+    <button class="reset-btn" onclick="resetToday()">🔄 Reset Today's Chores</button>
+  </div>
+</div>
+
+<script>
+// ── DATA ────────────────────────────────────────────────────
+const todayIdx = new Date().getDay();
+const isSchoolDay = todayIdx >= 1 && todayIdx <= 5;
+
+const defaultChores = {
+  morning: {
+    sam: [
+      {id:'sm1',label:'Get dressed',points:2},
+      {id:'sm2',label:'Have breakfast',points:2},
+      {id:'sm3',label:'Pack school bag',points:2,schoolDay:true},
+      {id:'sm4',label:'Put shoes on',points:1},
+      {id:'sm5',label:'Put watch on',points:1},
+      {id:'sm6',label:'Feed guinea pigs',points:3},
+      {id:'sm7',label:'Make bed',points:2},
+    ],
+    indy: [
+      {id:'im1',label:'Get dressed',points:2},
+      {id:'im2',label:'Have breakfast',points:2},
+      {id:'im3',label:'Pack school bag',points:2,schoolDay:true},
+      {id:'im4',label:'Put shoes on',points:1},
+      {id:'im5',label:'Put watch on',points:1},
+      {id:'im6',label:'Feed guinea pigs',points:3},
+      {id:'im7',label:'Make bed',points:2},
+    ]
+  },
+  afternoon: {
+    sam: [
+      {id:'sa1',label:'Unpack school bag',points:2,schoolDay:true},
+      {id:'sa2',label:'Put lunch things in dishwasher',points:2,schoolDay:true},
+      {id:'sa3',label:'Put school bag away',points:2,schoolDay:true},
+      {id:'sa4',label:'Charge watch',points:1},
+    ],
+    indy: [
+      {id:'ia1',label:'Unpack school bag',points:2,schoolDay:true},
+      {id:'ia2',label:'Put lunch things in dishwasher',points:2,schoolDay:true},
+      {id:'ia3',label:'Put school bag away',points:2,schoolDay:true},
+      {id:'ia4',label:'Charge watch',points:1},
+    ]
+  },
+  evening: {
+    sam: [{id:'se1',label:'Feed guinea pigs',points:3}],
+    indy: [{id:'ie1',label:'Feed guinea pigs',points:3}]
+  }
+};
+
+// Bonus chores — always visible, PIN-confirmed on completion
+const bonusChores = [
+  {id:'b1',label:'Unpack dishwasher',points:4,emoji:'🍽️'},
+  {id:'b2',label:'Put out recycling',points:4,emoji:'♻️'},
+  {id:'b3',label:'Help with washing up',points:4,emoji:'🫧'},
+];
+
+// ── STATE ───────────────────────────────────────────────────
+function loadState() {
+  try {
+    const r = localStorage.getItem('choreChampions');
+    if (r) return JSON.parse(r);
+  } catch(e){}
+  return { pin:'1234', lastDate:'', done:{}, bonusDone:{}, bonusPending:{}, bedroomAwarded:{}, extraChores:[], totalStars:{sam:0,indy:0} };
+}
+function saveState() { localStorage.setItem('choreChampions', JSON.stringify(state)); }
+
+let state = loadState();
+// Back-fill any missing keys from older saves
+['bonusDone','bonusPending','bedroomAwarded'].forEach(k => { if(!state[k]) state[k]={}; });
+
+const todayStr = new Date().toDateString();
+if (state.lastDate !== todayStr) {
+  state.done={}; state.bonusDone={}; state.bonusPending={}; state.bedroomAwarded={};
+  state.extraChores = state.extraChores.map(e=>({...e,done:false}));
+  state.lastDate = todayStr;
+  saveState();
+}
+
+let currentSession = 'morning';
+let pinBuffer = '';
+let pinMode = 'admin';       // 'admin' | 'verify'
+let pendingKey = null;       // e.g. 'b1_sam' or 'bedroom_indy'
+
+// ── DATE ────────────────────────────────────────────────────
+document.getElementById('dateBadge').textContent = new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long'});
+
+// ── TABS ────────────────────────────────────────────────────
+function setSession(s) {
+  currentSession = s;
+  document.querySelectorAll('.time-tab').forEach((t,i)=>{
+    t.classList.toggle('active',['morning','afternoon','evening'][i]===s);
+  });
+  render();
+}
+
+// ── RENDER ───────────────────────────────────────────────────
+function getBase(kid) {
+  return defaultChores[currentSession][kid].filter(c=>{
+    if(c.schoolDay && !isSchoolDay) return false;
+    if(c.weekendOnly && isSchoolDay) return false;
+    return true;
+  });
+}
+function getExtras(kid) {
+  return state.extraChores.filter(e=>e.session===currentSession&&(e.kid===kid||e.kid==='both'));
+}
+
+function render() {
+  ['sam','indy'].forEach(kid=>{
+    const base = getBase(kid);
+    const extras = getExtras(kid);
+    const required = [...base, ...extras];
+    const reqTotal = required.length;
+    const reqDone = required.filter(c=>c.extra?c.done:!!state.done[c.id]).length;
+
+    const pct = reqTotal===0 ? 0 : Math.round(reqDone/reqTotal*100);
+    document.getElementById(`${kid}Progress`).style.width = pct+'%';
+    document.getElementById(`${kid}ProgressLabel`).textContent =
+      reqTotal===0 ? 'Nothing required this session' : `${reqDone} / ${reqTotal} done`;
+    document.getElementById(`${kid}StarsBadge`).textContent = `⭐ ${state.totalStars[kid]}`;
+
+    const el = document.getElementById(`${kid}Chores`);
+    el.innerHTML = '';
+
+    if (base.length > 0) {
+      el.appendChild(sectionLabel('📋 Required'));
+      base.forEach(c=>el.appendChild(makeRegularEl(c,!!state.done[c.id],'regular',kid)));
+    }
+    if (extras.length > 0) {
+      el.appendChild(sectionLabel('➕ Extra Tasks'));
+      extras.forEach(c=>el.appendChild(makeRegularEl(c,c.done,'extra',kid)));
+    }
+
+    el.appendChild(sectionLabel('🌟 Bonus Chores'));
+    bonusChores.forEach(c=>{
+      const key=`${c.id}_${kid}`;
+      el.appendChild(makeBonusEl(c,!!state.bonusDone[key],!!state.bonusPending[key],kid));
+    });
+
+    el.appendChild(makeBedroomEl(kid));
+
+    if (reqDone===reqTotal && reqTotal>0) {
+      const d=document.createElement('div');
+      d.className='all-done'; d.textContent='🎉 All done! Amazing work!';
+      el.appendChild(d);
+    }
+  });
+
+  document.getElementById('samTotal').textContent = `⭐ ${state.totalStars.sam}`;
+  document.getElementById('indyTotal').textContent = `⭐ ${state.totalStars.indy}`;
+}
+
+function sectionLabel(text) {
+  const d=document.createElement('div'); d.className='section-label'; d.textContent=text; return d;
+}
+
+function makeRegularEl(c, done, type, kid) {
+  const div=document.createElement('div');
+  div.className=`chore-item${done?' done':''}${type==='extra'?' extra':''}`;
+  div.innerHTML=`
+    <div class="chore-check">${done?'✓':''}</div>
+    <span class="chore-label">${c.label}</span>
+    ${type==='extra'?'<span class="tag extra">Extra</span>':''}
+    <span class="chore-points">+${c.points}⭐</span>`;
+  div.addEventListener('click',()=>{
+    if(type==='extra'){
+      const idx=state.extraChores.findIndex(e=>e.id===c.id); if(idx===-1)return;
+      const was=state.extraChores[idx].done;
+      state.extraChores[idx].done=!was;
+      state.totalStars[kid]=Math.max(0,state.totalStars[kid]+(was?-c.points:c.points));
+    } else {
+      const was=!!state.done[c.id];
+      state.done[c.id]=!was;
+      state.totalStars[kid]=Math.max(0,state.totalStars[kid]+(was?-c.points:c.points));
+    }
+    saveState(); render();
+  });
+  return div;
+}
+
+function makeBonusEl(c, done, pending, kid) {
+  const key=`${c.id}_${kid}`;
+  const div=document.createElement('div');
+  div.className=`chore-item bonus${done?' done':''}${pending?' pending':''}`;
+  div.innerHTML=`
+    <div class="chore-check">${done?'✓':(pending?'⏳':'')}</div>
+    <span class="chore-label">${c.emoji} ${c.label}</span>
+    ${pending?'<span class="tag pending">⏳ Waiting…</span>':'<span class="tag bonus">Bonus</span>'}
+    <span class="chore-points">+${c.points}⭐</span>`;
+  div.addEventListener('click',()=>{
+    if(done||pending) return;
+    state.bonusPending[key]=true;
+    pendingKey=key;
+    saveState(); render();
+    openPIN('verify',`Confirm ${kid==='sam'?'Sam':'Indy'} did: ${c.emoji} ${c.label}`);
+  });
+  return div;
+}
+
+function makeBedroomEl(kid) {
+  const awarded=!!state.bedroomAwarded[kid];
+  const wrap=document.createElement('div'); wrap.className='bedroom-card';
+  wrap.innerHTML=`<div class="bedroom-inner">
+    <div class="bedroom-icon">🛏️</div>
+    <div class="bedroom-text">
+      <strong>Pristine Bedroom!</strong>
+      <span>${awarded?'✅ Awarded today!':'Parent checks & awards +3⭐'}</span>
+    </div>
+    <button class="bedroom-btn${awarded?' awarded':''}" onclick="triggerBedroom('${kid}')" ${awarded?'disabled':''}>
+      ${awarded?'Awarded!':'Award ⭐'}
+    </button>
+  </div>`;
+  return wrap;
+}
+
+function triggerBedroom(kid) {
+  pendingKey=`bedroom_${kid}`;
+  openPIN('verify',`Award pristine bedroom bonus to ${kid==='sam'?'Sam 🦕':'Indy 🦄'}?`);
+}
+
+// ── PIN ──────────────────────────────────────────────────────
+function openPIN(mode, ctx) {
+  pinMode=mode; pinBuffer=''; updatePinDots();
+  document.getElementById('pinError').textContent='';
+  const ctxEl=document.getElementById('pinContext');
+  if(ctx){ctxEl.textContent=ctx;ctxEl.style.display='block';}
+  else{ctxEl.style.display='none';}
+  document.getElementById('pinModal').classList.add('open');
+}
+
+function cancelPin() {
+  // If a bonus was set pending, unset it
+  if(pinMode==='verify' && pendingKey && !pendingKey.startsWith('bedroom_')){
+    delete state.bonusPending[pendingKey];
+    pendingKey=null; saveState(); render();
+  }
+  pendingKey=null;
+  closeModal('pinModal');
+}
+
+function pinPress(key) {
+  if(key==='back') pinBuffer=pinBuffer.slice(0,-1);
+  else if(key==='clear') pinBuffer='';
+  else if(pinBuffer.length<4) pinBuffer+=key;
+  updatePinDots();
+  if(pinBuffer.length===4){
+    setTimeout(()=>{
+      if(pinBuffer===state.pin){
+        closeModal('pinModal');
+        if(pinMode==='admin') openAdmin();
+        else verifyConfirmed();
+      } else {
+        document.getElementById('pinError').textContent='❌ Wrong PIN, try again';
+        if(pinMode==='verify' && pendingKey && !pendingKey.startsWith('bedroom_')){
+          delete state.bonusPending[pendingKey];
+          pendingKey=null; saveState(); render();
+        }
+        pinBuffer=''; updatePinDots();
+      }
+    },200);
+  }
+}
+
+function updatePinDots(){
+  for(let i=0;i<4;i++) document.getElementById(`pd${i}`).classList.toggle('filled',i<pinBuffer.length);
+}
+
+function verifyConfirmed(){
+  if(!pendingKey) return;
+  if(pendingKey.startsWith('bedroom_')){
+    const kid=pendingKey.replace('bedroom_','');
+    state.bedroomAwarded[kid]=true;
+    state.totalStars[kid]=(state.totalStars[kid]||0)+3;
+  } else {
+    const [bonusId,kid]=pendingKey.split('_');
+    const chore=bonusChores.find(b=>b.id===bonusId);
+    if(chore){
+      state.bonusDone[pendingKey]=true;
+      delete state.bonusPending[pendingKey];
+      state.totalStars[kid]=(state.totalStars[kid]||0)+chore.points;
+    }
+  }
+  pendingKey=null; saveState(); render();
+}
+
+// ── ADMIN ────────────────────────────────────────────────────
+function openAdmin(){
+  document.getElementById('adminSamTotal').textContent=state.totalStars.sam+' ⭐';
+  document.getElementById('adminIndyTotal').textContent=state.totalStars.indy+' ⭐';
+  renderVerifyQueue();
+  document.getElementById('adminModal').classList.add('open');
+}
+
+function renderVerifyQueue(){
+  const el=document.getElementById('verifyQueue');
+  const pending=Object.keys(state.bonusPending).filter(k=>state.bonusPending[k]);
+  if(pending.length===0){el.innerHTML='<div class="no-verify">Nothing waiting ✓</div>';return;}
+  el.innerHTML='';
+  pending.forEach(key=>{
+    const [bonusId,kid]=key.split('_');
+    const chore=bonusChores.find(b=>b.id===bonusId); if(!chore)return;
+    const d=document.createElement('div'); d.className='verify-item';
+    d.innerHTML=`<span>${kid==='sam'?'🦕 Sam':'🦄 Indy'}: ${chore.emoji} ${chore.label} (+${chore.points}⭐)</span>
+      <button class="v-approve" onclick="approveBonus('${key}')">✓ Yes</button>
+      <button class="v-deny" onclick="denyBonus('${key}')">✕ No</button>`;
+    el.appendChild(d);
+  });
+}
+
+function approveBonus(key){
+  const [bonusId,kid]=key.split('_');
+  const chore=bonusChores.find(b=>b.id===bonusId); if(!chore)return;
+  state.bonusDone[key]=true; delete state.bonusPending[key];
+  state.totalStars[kid]=(state.totalStars[kid]||0)+chore.points;
+  saveState(); render();
+  document.getElementById('adminSamTotal').textContent=state.totalStars.sam+' ⭐';
+  document.getElementById('adminIndyTotal').textContent=state.totalStars.indy+' ⭐';
+  renderVerifyQueue();
+}
+
+function denyBonus(key){
+  delete state.bonusPending[key]; delete state.bonusDone[key];
+  saveState(); render(); renderVerifyQueue();
+}
+
+function addExtraChore(){
+  const label=document.getElementById('extraLabel').value.trim();
+  const kid=document.getElementById('extraKid').value;
+  const session=document.getElementById('extraSession').value;
+  if(!label)return;
+  state.extraChores.push({id:'ex_'+Date.now(),label,kid,session,points:3,done:false,extra:true});
+  document.getElementById('extraLabel').value='';
+  saveState(); render();
+}
+
+function resetStars(kid){
+  if(confirm(`Reset ${kid}'s stars to 0?`)){
+    state.totalStars[kid]=0; saveState(); render();
+    document.getElementById('adminSamTotal').textContent=state.totalStars.sam+' ⭐';
+    document.getElementById('adminIndyTotal').textContent=state.totalStars.indy+' ⭐';
+  }
+}
+
+function resetToday(){
+  if(confirm("Reset all of today's chores?")){
+    state.done={}; state.bonusDone={}; state.bonusPending={}; state.bedroomAwarded={};
+    state.extraChores=state.extraChores.map(e=>({...e,done:false}));
+    saveState(); render();
+  }
+}
+
+function changePIN(){
+  const val=document.getElementById('newPIN').value.trim();
+  if(!/^\d{4}$/.test(val)){alert('Please enter exactly 4 digits.');return;}
+  state.pin=val; saveState();
+  document.getElementById('newPIN').value='';
+  alert('PIN updated! ✓');
+}
+
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click',e=>{ if(e.target===el){ if(el.id==='pinModal') cancelPin(); else closeModal(el.id); }});
+});
+
+render();
+</script>
+</body>
+</html>
