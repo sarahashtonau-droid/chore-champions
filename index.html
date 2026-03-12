@@ -561,8 +561,8 @@ function handleSheetData(data) {
 
 
   saveState();
-  render();
-  if (currentSession==='scoreboard') renderScoreboard();
+  if (currentSession !== 'scoreboard') render();
+  else renderScoreboard();
 }
 
 function jsonpCall(url) {
