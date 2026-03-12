@@ -558,8 +558,8 @@ function handleSheetData(data) {
   if (data.daily) sheetsData.daily = data.daily;
   syncOk = true;
   setSyncStatus('ok','Synced with Google Sheets ✓');
-  state.totalStars.sam = Math.max(state.totalStars.sam, sheetsData.totals.sam);
-  state.totalStars.indy = Math.max(state.totalStars.indy, sheetsData.totals.indy);
+
+
   saveState();
   render();
   if (currentSession==='scoreboard') renderScoreboard();
