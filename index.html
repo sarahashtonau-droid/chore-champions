@@ -10,7 +10,7 @@
     --sam:#4A90D9; --sam-dark:#2c6fad;
     --indy:#E85D9A; --indy-dark:#b83d76;
     --green:#4CAF50; --purple:#7B5EA7;
-    --bg:#F7F3FF; --muted:#888;
+    --gold:#FFD700; --bg:#F7F3FF; --muted:#888;
     --radius:20px; --shadow:0 4px 20px rgba(0,0,0,0.10);
   }
   * { box-sizing:border-box; margin:0; padding:0; }
@@ -41,15 +41,18 @@
     box-shadow:0 2px 10px rgba(0,0,0,0.1); color:var(--purple);
   }
 
-  .time-tabs { display:flex; justify-content:center; gap:10px; padding:10px 20px; flex-wrap:wrap; }
+  .time-tabs { display:flex; justify-content:center; gap:8px; padding:10px 16px; flex-wrap:wrap; }
   .time-tab {
-    background:white; border:3px solid transparent; border-radius:50px; padding:10px 22px;
-    font-family:'Nunito',sans-serif; font-weight:800; font-size:1rem;
+    background:white; border:3px solid transparent; border-radius:50px; padding:10px 20px;
+    font-family:'Nunito',sans-serif; font-weight:800; font-size:0.95rem;
     cursor:pointer; transition:all 0.2s; box-shadow:0 2px 8px rgba(0,0,0,0.08);
   }
   .time-tab.active { background:var(--purple); color:white; border-color:var(--purple); }
   .time-tab:not(.active):hover { border-color:var(--purple); }
+  .time-tab.trophy.active { background:linear-gradient(135deg,#f59e0b,#fbbf24); border-color:#f59e0b; }
+  .time-tab.trophy:not(.active):hover { border-color:#f59e0b; }
 
+  /* CHORES VIEW */
   .kids-grid {
     display:grid; grid-template-columns:1fr 1fr; gap:16px;
     padding:8px 16px 110px; max-width:900px; margin:0 auto;
@@ -95,7 +98,6 @@
   .chore-item.bonus.pending { background:#fef9c3; border-color:#fde047; animation:pulse 1.5s infinite; }
   .chore-item.extra { background:#fffbeb; border-color:#fde68a; }
   .chore-item.extra.done { background:#f0fdf4; border-color:#bbf7d0; }
-
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.65} }
 
   .chore-check {
@@ -109,16 +111,12 @@
 
   .chore-label { font-size:0.98rem; font-weight:700; flex:1; transition:all 0.2s; }
   .chore-item.done .chore-label { text-decoration:line-through; color:var(--muted); }
-
   .chore-points { font-size:0.8rem; font-weight:800; color:#f59e0b; background:#fffbeb; border-radius:20px; padding:2px 8px; flex-shrink:0; }
-  .tag {
-    font-size:0.68rem; font-weight:800; border-radius:10px; padding:2px 7px; flex-shrink:0;
-  }
+  .tag { font-size:0.68rem; font-weight:800; border-radius:10px; padding:2px 7px; flex-shrink:0; }
   .tag.bonus { color:#7c3aed; background:#ede9fe; }
   .tag.extra { color:#d97706; background:#fef3c7; }
   .tag.pending { color:#ca8a04; background:#fef9c3; }
 
-  /* Bedroom card */
   .bedroom-card {
     margin:10px 0 4px; border-radius:14px; overflow:hidden;
     border:2px dashed #fbbf24; background:linear-gradient(135deg,#fffbeb,#fef3c7);
@@ -140,6 +138,83 @@
   .all-done { text-align:center; padding:14px; font-size:1rem; font-weight:800; color:var(--green); animation:fadeIn 0.5s ease; }
   @keyframes fadeIn { from{opacity:0;transform:translateY(5px)} to{opacity:1} }
 
+  /* ── SCOREBOARD ── */
+  .scoreboard-view {
+    display:none; padding:8px 16px 110px; max-width:700px; margin:0 auto;
+  }
+  .scoreboard-view.active { display:block; }
+
+  .score-header {
+    text-align:center; padding:16px 0 24px;
+  }
+  .score-header h2 { font-size:2rem; color:var(--purple); }
+  .score-header p { color:var(--muted); font-weight:600; font-size:0.9rem; margin-top:4px; }
+
+  .podium {
+    display:flex; align-items:flex-end; justify-content:center;
+    gap:12px; margin-bottom:28px; padding:0 20px;
+  }
+  .podium-slot { flex:1; max-width:160px; text-align:center; }
+  .podium-avatar {
+    font-size:3rem; display:block; margin-bottom:6px;
+    animation:bounce 2s infinite;
+  }
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  .podium-name { font-family:'Fredoka One',cursive; font-size:1.3rem; margin-bottom:4px; }
+  .podium-name.sam { color:var(--sam); }
+  .podium-name.indy { color:var(--indy); }
+  .podium-stars {
+    font-size:1.6rem; font-weight:900; font-family:'Fredoka One',cursive;
+    display:block; margin-bottom:8px;
+  }
+  .podium-bar {
+    border-radius:14px 14px 0 0; min-height:40px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.4rem; transition:height 0.8s ease;
+  }
+  .podium-bar.sam { background:linear-gradient(180deg,#6aaae8,#4A90D9); }
+  .podium-bar.indy { background:linear-gradient(180deg,#f07dba,#E85D9A); }
+
+  .score-cards { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px; }
+  .score-card {
+    background:white; border-radius:18px; box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .score-card-header { padding:14px 16px 10px; }
+  .score-card-header.sam { background:linear-gradient(135deg,#4A90D9,#6aaae8); }
+  .score-card-header.indy { background:linear-gradient(135deg,#E85D9A,#f07dba); }
+  .score-card-header .sc-name { font-family:'Fredoka One',cursive; color:white; font-size:1.2rem; }
+  .score-card-body { padding:14px 16px; }
+  .score-row { display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px solid #f0f0f0; }
+  .score-row:last-child { border-bottom:none; }
+  .score-row .label { font-size:0.85rem; font-weight:600; color:var(--muted); }
+  .score-row .value { font-size:1rem; font-weight:800; color:#2d2d2d; }
+  .score-row .value.big { font-size:1.4rem; color:var(--purple); font-family:'Fredoka One',cursive; }
+
+  .daily-table {
+    background:white; border-radius:18px; box-shadow:var(--shadow);
+    overflow:hidden; margin-bottom:16px;
+  }
+  .daily-table h3 { padding:14px 16px 10px; font-size:1.1rem; color:var(--purple); border-bottom:2px solid #f0f0f0; }
+  .daily-row {
+    display:grid; grid-template-columns:1fr 1fr 1fr;
+    padding:10px 16px; border-bottom:1px solid #f7f7f7; font-size:0.9rem;
+  }
+  .daily-row.header { background:#f9f7ff; font-weight:800; font-size:0.8rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; }
+  .daily-row:last-child { border-bottom:none; }
+  .daily-row .d-sam { color:var(--sam); font-weight:800; }
+  .daily-row .d-indy { color:var(--indy); font-weight:800; }
+
+  .sync-status {
+    text-align:center; font-size:0.8rem; font-weight:600; color:var(--muted);
+    padding:8px; display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .sync-dot { width:8px; height:8px; border-radius:50%; background:#ccc; flex-shrink:0; }
+  .sync-dot.ok { background:var(--green); }
+  .sync-dot.err { background:#ef4444; }
+  .sync-dot.loading { background:#f59e0b; animation:pulse 1s infinite; }
+
+  /* FOOTER */
   .footer-bar {
     position:fixed; bottom:0; left:0; right:0; background:white;
     box-shadow:0 -4px 20px rgba(0,0,0,0.1); display:flex;
@@ -151,7 +226,7 @@
   .footer-kid.indy .dot { background:var(--indy); }
   .footer-divider { width:1px; background:#eee; }
 
-  /* Modals */
+  /* MODALS */
   .modal-overlay {
     display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5);
     z-index:100; align-items:center; justify-content:center; padding:20px;
@@ -189,7 +264,6 @@
   .admin-row span { font-weight:600; font-size:0.95rem; flex:1; }
   .tbtn { padding:6px 14px; border-radius:20px; border:none; cursor:pointer; font-family:'Nunito',sans-serif; font-weight:700; font-size:0.85rem; }
   .tbtn.red { background:#fee2e2; color:#dc2626; }
-  .tbtn.green { background:#dcfce7; color:#16a34a; }
 
   .add-form { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
   .add-form input, .add-form select {
@@ -212,6 +286,7 @@
 
   @media(max-width:500px) {
     .kids-grid { grid-template-columns:1fr; }
+    .score-cards { grid-template-columns:1fr; }
     .header h1 { font-size:1.8rem; }
   }
 </style>
@@ -228,9 +303,11 @@
   <button class="time-tab active" onclick="setSession('morning')">🌅 Morning</button>
   <button class="time-tab" onclick="setSession('afternoon')">🎒 Afternoon</button>
   <button class="time-tab" onclick="setSession('evening')">🌙 Evening</button>
+  <button class="time-tab trophy" onclick="setSession('scoreboard')">🏆 Scores</button>
 </div>
 
-<div class="kids-grid">
+<!-- CHORES VIEW -->
+<div class="kids-grid" id="choresView">
   <div class="kid-card">
     <div class="kid-header sam">
       <div class="kid-avatar">🦕</div>
@@ -243,7 +320,6 @@
     </div>
     <div class="chore-list" id="samChores"></div>
   </div>
-
   <div class="kid-card">
     <div class="kid-header indy">
       <div class="kid-avatar">🦄</div>
@@ -255,6 +331,59 @@
       <div class="progress-label" id="indyProgressLabel"></div>
     </div>
     <div class="chore-list" id="indyChores"></div>
+  </div>
+</div>
+
+<!-- SCOREBOARD VIEW -->
+<div class="scoreboard-view" id="scoreboardView">
+  <div class="score-header">
+    <h2>🏆 Scoreboard</h2>
+    <p id="syncStatus2">Loading scores...</p>
+  </div>
+
+  <div class="podium" id="podium">
+    <div class="podium-slot" id="podiumSam">
+      <span class="podium-avatar">🦕</span>
+      <div class="podium-name sam">Sam</div>
+      <span class="podium-stars sam" id="podiumSamStars">⭐ 0</span>
+      <div class="podium-bar sam" id="podiumSamBar" style="height:60px"></div>
+    </div>
+    <div class="podium-slot" id="podiumIndy">
+      <span class="podium-avatar">🦄</span>
+      <div class="podium-name indy">Indy</div>
+      <span class="podium-stars indy" id="podiumIndyStars">⭐ 0</span>
+      <div class="podium-bar indy" id="podiumIndyBar" style="height:60px"></div>
+    </div>
+  </div>
+
+  <div class="score-cards">
+    <div class="score-card">
+      <div class="score-card-header sam"><div class="sc-name">🦕 Sam</div></div>
+      <div class="score-card-body">
+        <div class="score-row"><span class="label">Total Stars</span><span class="value big" id="scSamTotal">0 ⭐</span></div>
+        <div class="score-row"><span class="label">Today</span><span class="value" id="scSamToday">0 ⭐</span></div>
+        <div class="score-row"><span class="label">Best Day</span><span class="value" id="scSamBest">— ⭐</span></div>
+      </div>
+    </div>
+    <div class="score-card">
+      <div class="score-card-header indy"><div class="sc-name">🦄 Indy</div></div>
+      <div class="score-card-body">
+        <div class="score-row"><span class="label">Total Stars</span><span class="value big" id="scIndyTotal">0 ⭐</span></div>
+        <div class="score-row"><span class="label">Today</span><span class="value" id="scIndyToday">0 ⭐</span></div>
+        <div class="score-row"><span class="label">Best Day</span><span class="value" id="scIndyBest">— ⭐</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="daily-table">
+    <h3>📅 Daily History</h3>
+    <div class="daily-row header"><span>Date</span><span class="d-sam">🦕 Sam</span><span class="d-indy">🦄 Indy</span></div>
+    <div id="dailyRows"><div style="padding:14px;text-align:center;color:var(--muted);font-weight:600">Loading...</div></div>
+  </div>
+
+  <div class="sync-status">
+    <div class="sync-dot loading" id="syncDot"></div>
+    <span id="syncText">Connecting to Google Sheets...</span>
   </div>
 </div>
 
@@ -307,30 +436,16 @@
       <h3>➕ Add Extra Chore Today</h3>
       <div class="add-form">
         <input type="text" id="extraLabel" placeholder="e.g. Put washing away" />
-        <select id="extraKid">
-          <option value="both">Both</option>
-          <option value="sam">Sam</option>
-          <option value="indy">Indy</option>
-        </select>
-        <select id="extraSession">
-          <option value="morning">Morning</option>
-          <option value="afternoon">Afternoon</option>
-          <option value="evening">Evening</option>
-        </select>
+        <select id="extraKid"><option value="both">Both</option><option value="sam">Sam</option><option value="indy">Indy</option></select>
+        <select id="extraSession"><option value="morning">Morning</option><option value="afternoon">Afternoon</option><option value="evening">Evening</option></select>
         <button class="add-btn" onclick="addExtraChore()">Add</button>
       </div>
     </div>
 
     <div class="admin-section">
       <h3>🌟 Total Stars</h3>
-      <div class="admin-row">
-        <span>🦕 Sam</span><strong id="adminSamTotal">0 ⭐</strong>
-        <button class="tbtn red" onclick="resetStars('sam')">Reset</button>
-      </div>
-      <div class="admin-row">
-        <span>🦄 Indy</span><strong id="adminIndyTotal">0 ⭐</strong>
-        <button class="tbtn red" onclick="resetStars('indy')">Reset</button>
-      </div>
+      <div class="admin-row"><span>🦕 Sam</span><strong id="adminSamTotal">0 ⭐</strong><button class="tbtn red" onclick="resetStars('sam')">Reset</button></div>
+      <div class="admin-row"><span>🦄 Indy</span><strong id="adminIndyTotal">0 ⭐</strong><button class="tbtn red" onclick="resetStars('indy')">Reset</button></div>
     </div>
 
     <div class="admin-section">
@@ -346,9 +461,13 @@
 </div>
 
 <script>
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxxc0tSU5upTfn8WeIUIDh2q-O0XFVoomGPajSJwIM9c1Q4dkLrCrZfPrpRptOWxlNIng/exec';
+
 // ── DATA ────────────────────────────────────────────────────
 const todayIdx = new Date().getDay();
 const isSchoolDay = todayIdx >= 1 && todayIdx <= 5;
+const todayStr = new Date().toDateString();
+const todayAU = new Date().toLocaleDateString('en-AU');
 
 const defaultChores = {
   morning: {
@@ -393,7 +512,6 @@ const defaultChores = {
   }
 };
 
-// Bonus chores — always visible, PIN-confirmed on completion
 const bonusChores = [
   {id:'b1',label:'Unpack dishwasher',points:4,emoji:'🍽️'},
   {id:'b2',label:'Put out recycling',points:4,emoji:'♻️'},
@@ -402,30 +520,78 @@ const bonusChores = [
 
 // ── STATE ───────────────────────────────────────────────────
 function loadState() {
-  try {
-    const r = localStorage.getItem('choreChampions');
-    if (r) return JSON.parse(r);
-  } catch(e){}
-  return { pin:'1234', lastDate:'', done:{}, bonusDone:{}, bonusPending:{}, bedroomAwarded:{}, extraChores:[], totalStars:{sam:0,indy:0} };
+  try { const r=localStorage.getItem('choreChampions'); if(r) return JSON.parse(r); } catch(e){}
+  return {pin:'1234',lastDate:'',done:{},bonusDone:{},bonusPending:{},bedroomAwarded:{},extraChores:[],totalStars:{sam:0,indy:0}};
 }
-function saveState() { localStorage.setItem('choreChampions', JSON.stringify(state)); }
+function saveState() { localStorage.setItem('choreChampions',JSON.stringify(state)); }
 
 let state = loadState();
-// Back-fill any missing keys from older saves
-['bonusDone','bonusPending','bedroomAwarded'].forEach(k => { if(!state[k]) state[k]={}; });
+['bonusDone','bonusPending','bedroomAwarded'].forEach(k=>{if(!state[k])state[k]={};});
 
-const todayStr = new Date().toDateString();
 if (state.lastDate !== todayStr) {
   state.done={}; state.bonusDone={}; state.bonusPending={}; state.bedroomAwarded={};
-  state.extraChores = state.extraChores.map(e=>({...e,done:false}));
-  state.lastDate = todayStr;
+  state.extraChores=state.extraChores.map(e=>({...e,done:false}));
+  state.lastDate=todayStr;
   saveState();
 }
 
 let currentSession = 'morning';
 let pinBuffer = '';
-let pinMode = 'admin';       // 'admin' | 'verify'
-let pendingKey = null;       // e.g. 'b1_sam' or 'bedroom_indy'
+let pinMode = 'admin';
+let pendingKey = null;
+let sheetsData = { totals:{sam:0,indy:0}, daily:[] };
+let syncOk = false;
+
+// ── GOOGLE SHEETS ────────────────────────────────────────────
+async function fetchSheets() {
+  setSyncStatus('loading','Syncing with Google Sheets...');
+  try {
+    const res = await fetch(SHEETS_URL, {method:'GET', redirect:'follow'});
+    const data = await res.json();
+    if (data.totals) {
+      sheetsData.totals = {
+        sam: Number(data.totals.sam)||0,
+        indy: Number(data.totals.indy)||0
+      };
+    }
+    if (data.daily) sheetsData.daily = data.daily;
+    syncOk = true;
+    setSyncStatus('ok','Synced with Google Sheets ✓');
+    // Use sheets totals as the source of truth
+    state.totalStars.sam = sheetsData.totals.sam;
+    state.totalStars.indy = sheetsData.totals.indy;
+    saveState();
+    render();
+    if (currentSession==='scoreboard') renderScoreboard();
+  } catch(e) {
+    setSyncStatus('err','Could not reach Google Sheets');
+  }
+}
+
+async function pushToSheets(kid, stars) {
+  try {
+    await fetch(SHEETS_URL, {
+      method:'POST',
+      redirect:'follow',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({kid, stars})
+    });
+    syncOk=true;
+    setSyncStatus('ok','Saved to Google Sheets ✓');
+    setTimeout(()=>fetchSheets(), 800);
+  } catch(e) {
+    setSyncStatus('err','Could not save — will retry');
+  }
+}
+
+function setSyncStatus(state, text) {
+  const dot = document.getElementById('syncDot');
+  const txt = document.getElementById('syncText');
+  const p = document.getElementById('syncStatus2');
+  if(dot){ dot.className='sync-dot '+state; }
+  if(txt){ txt.textContent=text; }
+  if(p){ p.textContent=text; }
+}
 
 // ── DATE ────────────────────────────────────────────────────
 document.getElementById('dateBadge').textContent = new Date().toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long'});
@@ -433,282 +599,170 @@ document.getElementById('dateBadge').textContent = new Date().toLocaleDateString
 // ── TABS ────────────────────────────────────────────────────
 function setSession(s) {
   currentSession = s;
-  document.querySelectorAll('.time-tab').forEach((t,i)=>{
-    t.classList.toggle('active',['morning','afternoon','evening'][i]===s);
-  });
-  render();
+  const tabs = ['morning','afternoon','evening','scoreboard'];
+  document.querySelectorAll('.time-tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===s));
+  document.getElementById('choresView').style.display = s==='scoreboard'?'none':'grid';
+  const sb = document.getElementById('scoreboardView');
+  sb.classList.toggle('active', s==='scoreboard');
+  if(s==='scoreboard'){ fetchSheets(); renderScoreboard(); }
+  else render();
+}
+
+// ── SCOREBOARD ───────────────────────────────────────────────
+function renderScoreboard() {
+  const samTotal = state.totalStars.sam;
+  const indyTotal = state.totalStars.indy;
+  const maxStars = Math.max(samTotal, indyTotal, 1);
+  const samH = Math.max(40, Math.round(samTotal/maxStars*140));
+  const indyH = Math.max(40, Math.round(indyTotal/maxStars*140));
+
+  document.getElementById('podiumSamStars').textContent = `⭐ ${samTotal}`;
+  document.getElementById('podiumIndyStars').textContent = `⭐ ${indyTotal}`;
+  document.getElementById('podiumSamBar').style.height = samH+'px';
+  document.getElementById('podiumIndyBar').style.height = indyH+'px';
+
+  document.getElementById('scSamTotal').textContent = samTotal+' ⭐';
+  document.getElementById('scIndyTotal').textContent = indyTotal+' ⭐';
+
+  // Today from daily history
+  const daily = sheetsData.daily || [];
+  const todayRow = daily.find(r=>r.date===todayAU);
+  document.getElementById('scSamToday').textContent = (todayRow?todayRow.sam:0)+' ⭐';
+  document.getElementById('scIndyToday').textContent = (todayRow?todayRow.indy:0)+' ⭐';
+
+  // Best day
+  let bestSam=0, bestIndy=0;
+  daily.forEach(r=>{ if(Number(r.sam)>bestSam)bestSam=Number(r.sam); if(Number(r.indy)>bestIndy)bestIndy=Number(r.indy); });
+  document.getElementById('scSamBest').textContent = bestSam+' ⭐';
+  document.getElementById('scIndyBest').textContent = bestIndy+' ⭐';
+
+  // Daily rows (most recent first)
+  const sorted = [...daily].reverse().slice(0,14);
+  const el = document.getElementById('dailyRows');
+  if(sorted.length===0){ el.innerHTML='<div style="padding:14px;text-align:center;color:var(--muted);font-weight:600">No history yet</div>'; return; }
+  el.innerHTML = sorted.map(r=>`
+    <div class="daily-row">
+      <span>${r.date}</span>
+      <span class="d-sam">${r.sam} ⭐</span>
+      <span class="d-indy">${r.indy} ⭐</span>
+    </div>`).join('');
 }
 
 // ── RENDER ───────────────────────────────────────────────────
-function getBase(kid) {
-  return defaultChores[currentSession][kid].filter(c=>{
-    if(c.schoolDay && !isSchoolDay) return false;
-    if(c.weekendOnly && isSchoolDay) return false;
-    return true;
-  });
-}
-function getExtras(kid) {
-  return state.extraChores.filter(e=>e.session===currentSession&&(e.kid===kid||e.kid==='both'));
-}
+function getBase(kid){ return defaultChores[currentSession][kid].filter(c=>{ if(c.schoolDay&&!isSchoolDay)return false; if(c.weekendOnly&&isSchoolDay)return false; return true; }); }
+function getExtras(kid){ return state.extraChores.filter(e=>e.session===currentSession&&(e.kid===kid||e.kid==='both')); }
 
 function render() {
   ['sam','indy'].forEach(kid=>{
-    const base = getBase(kid);
-    const extras = getExtras(kid);
-    const required = [...base, ...extras];
-    const reqTotal = required.length;
-    const reqDone = required.filter(c=>c.extra?c.done:!!state.done[c.id]).length;
+    const base=getBase(kid), extras=getExtras(kid);
+    const required=[...base,...extras];
+    const reqTotal=required.length;
+    const reqDone=required.filter(c=>c.extra?c.done:!!state.done[c.id]).length;
+    const pct=reqTotal===0?0:Math.round(reqDone/reqTotal*100);
+    document.getElementById(`${kid}Progress`).style.width=pct+'%';
+    document.getElementById(`${kid}ProgressLabel`).textContent=reqTotal===0?'Nothing required this session':`${reqDone} / ${reqTotal} done`;
+    document.getElementById(`${kid}StarsBadge`).textContent=`⭐ ${state.totalStars[kid]}`;
 
-    const pct = reqTotal===0 ? 0 : Math.round(reqDone/reqTotal*100);
-    document.getElementById(`${kid}Progress`).style.width = pct+'%';
-    document.getElementById(`${kid}ProgressLabel`).textContent =
-      reqTotal===0 ? 'Nothing required this session' : `${reqDone} / ${reqTotal} done`;
-    document.getElementById(`${kid}StarsBadge`).textContent = `⭐ ${state.totalStars[kid]}`;
-
-    const el = document.getElementById(`${kid}Chores`);
-    el.innerHTML = '';
-
-    if (base.length > 0) {
-      el.appendChild(sectionLabel('📋 Required'));
-      base.forEach(c=>el.appendChild(makeRegularEl(c,!!state.done[c.id],'regular',kid)));
-    }
-    if (extras.length > 0) {
-      el.appendChild(sectionLabel('➕ Extra Tasks'));
-      extras.forEach(c=>el.appendChild(makeRegularEl(c,c.done,'extra',kid)));
-    }
-
+    const el=document.getElementById(`${kid}Chores`); el.innerHTML='';
+    if(base.length>0){ el.appendChild(sectionLabel('📋 Required')); base.forEach(c=>el.appendChild(makeRegularEl(c,!!state.done[c.id],'regular',kid))); }
+    if(extras.length>0){ el.appendChild(sectionLabel('➕ Extra Tasks')); extras.forEach(c=>el.appendChild(makeRegularEl(c,c.done,'extra',kid))); }
     el.appendChild(sectionLabel('🌟 Bonus Chores'));
-    bonusChores.forEach(c=>{
-      const key=`${c.id}_${kid}`;
-      el.appendChild(makeBonusEl(c,!!state.bonusDone[key],!!state.bonusPending[key],kid));
-    });
-
+    bonusChores.forEach(c=>{ const key=`${c.id}_${kid}`; el.appendChild(makeBonusEl(c,!!state.bonusDone[key],!!state.bonusPending[key],kid)); });
     el.appendChild(makeBedroomEl(kid));
-
-    if (reqDone===reqTotal && reqTotal>0) {
-      const d=document.createElement('div');
-      d.className='all-done'; d.textContent='🎉 All done! Amazing work!';
-      el.appendChild(d);
-    }
+    if(reqDone===reqTotal&&reqTotal>0){ const d=document.createElement('div'); d.className='all-done'; d.textContent='🎉 All done! Amazing work!'; el.appendChild(d); }
   });
-
-  document.getElementById('samTotal').textContent = `⭐ ${state.totalStars.sam}`;
-  document.getElementById('indyTotal').textContent = `⭐ ${state.totalStars.indy}`;
+  document.getElementById('samTotal').textContent=`⭐ ${state.totalStars.sam}`;
+  document.getElementById('indyTotal').textContent=`⭐ ${state.totalStars.indy}`;
 }
 
-function sectionLabel(text) {
-  const d=document.createElement('div'); d.className='section-label'; d.textContent=text; return d;
-}
+function sectionLabel(text){ const d=document.createElement('div'); d.className='section-label'; d.textContent=text; return d; }
 
-function makeRegularEl(c, done, type, kid) {
+function makeRegularEl(c,done,type,kid){
   const div=document.createElement('div');
   div.className=`chore-item${done?' done':''}${type==='extra'?' extra':''}`;
-  div.innerHTML=`
-    <div class="chore-check">${done?'✓':''}</div>
-    <span class="chore-label">${c.label}</span>
-    ${type==='extra'?'<span class="tag extra">Extra</span>':''}
-    <span class="chore-points">+${c.points}⭐</span>`;
+  div.innerHTML=`<div class="chore-check">${done?'✓':''}</div><span class="chore-label">${c.label}</span>${type==='extra'?'<span class="tag extra">Extra</span>':''}<span class="chore-points">+${c.points}⭐</span>`;
   div.addEventListener('click',()=>{
-    if(type==='extra'){
-      const idx=state.extraChores.findIndex(e=>e.id===c.id); if(idx===-1)return;
-      const was=state.extraChores[idx].done;
-      state.extraChores[idx].done=!was;
-      state.totalStars[kid]=Math.max(0,state.totalStars[kid]+(was?-c.points:c.points));
-    } else {
-      const was=!!state.done[c.id];
-      state.done[c.id]=!was;
-      state.totalStars[kid]=Math.max(0,state.totalStars[kid]+(was?-c.points:c.points));
-    }
-    saveState(); render();
+    if(type==='extra'){ const idx=state.extraChores.findIndex(e=>e.id===c.id); if(idx===-1)return; const was=state.extraChores[idx].done; state.extraChores[idx].done=!was; updateStars(kid,was?-c.points:c.points); }
+    else { const was=!!state.done[c.id]; state.done[c.id]=!was; updateStars(kid,was?-c.points:c.points); }
   });
   return div;
 }
 
-function makeBonusEl(c, done, pending, kid) {
+function makeBonusEl(c,done,pending,kid){
   const key=`${c.id}_${kid}`;
   const div=document.createElement('div');
   div.className=`chore-item bonus${done?' done':''}${pending?' pending':''}`;
-  div.innerHTML=`
-    <div class="chore-check">${done?'✓':(pending?'⏳':'')}</div>
-    <span class="chore-label">${c.emoji} ${c.label}</span>
-    ${pending?'<span class="tag pending">⏳ Waiting…</span>':'<span class="tag bonus">Bonus</span>'}
-    <span class="chore-points">+${c.points}⭐</span>`;
+  div.innerHTML=`<div class="chore-check">${done?'✓':(pending?'⏳':'')}</div><span class="chore-label">${c.emoji} ${c.label}</span>${pending?'<span class="tag pending">⏳ Waiting…</span>':'<span class="tag bonus">Bonus</span>'}<span class="chore-points">+${c.points}⭐</span>`;
   div.addEventListener('click',()=>{
-    if(done||pending) return;
-    state.bonusPending[key]=true;
-    pendingKey=key;
-    saveState(); render();
+    if(done||pending)return;
+    state.bonusPending[key]=true; pendingKey=key; saveState(); render();
     openPIN('verify',`Confirm ${kid==='sam'?'Sam':'Indy'} did: ${c.emoji} ${c.label}`);
   });
   return div;
 }
 
-function makeBedroomEl(kid) {
+function makeBedroomEl(kid){
   const awarded=!!state.bedroomAwarded[kid];
   const wrap=document.createElement('div'); wrap.className='bedroom-card';
-  wrap.innerHTML=`<div class="bedroom-inner">
-    <div class="bedroom-icon">🛏️</div>
-    <div class="bedroom-text">
-      <strong>Pristine Bedroom!</strong>
-      <span>${awarded?'✅ Awarded today!':'Parent checks & awards +3⭐'}</span>
-    </div>
-    <button class="bedroom-btn${awarded?' awarded':''}" onclick="triggerBedroom('${kid}')" ${awarded?'disabled':''}>
-      ${awarded?'Awarded!':'Award ⭐'}
-    </button>
-  </div>`;
+  wrap.innerHTML=`<div class="bedroom-inner"><div class="bedroom-icon">🛏️</div><div class="bedroom-text"><strong>Pristine Bedroom!</strong><span>${awarded?'✅ Awarded today!':'Parent checks & awards +10⭐'}</span></div><button class="bedroom-btn${awarded?' awarded':''}" onclick="triggerBedroom('${kid}')" ${awarded?'disabled':''}>${awarded?'Awarded!':'Award ⭐'}</button></div>`;
   return wrap;
 }
 
-function triggerBedroom(kid) {
-  pendingKey=`bedroom_${kid}`;
-  openPIN('verify',`Award pristine bedroom bonus to ${kid==='sam'?'Sam 🦕':'Indy 🦄'}?`);
+function triggerBedroom(kid){ pendingKey=`bedroom_${kid}`; openPIN('verify',`Award pristine bedroom +10⭐ to ${kid==='sam'?'Sam 🦕':'Indy 🦄'}?`); }
+
+function updateStars(kid, delta){
+  state.totalStars[kid]=Math.max(0,state.totalStars[kid]+delta);
+  saveState(); render();
+  pushToSheets(kid, state.totalStars[kid]);
 }
 
 // ── PIN ──────────────────────────────────────────────────────
-function openPIN(mode, ctx) {
-  pinMode=mode; pinBuffer=''; updatePinDots();
-  document.getElementById('pinError').textContent='';
-  const ctxEl=document.getElementById('pinContext');
-  if(ctx){ctxEl.textContent=ctx;ctxEl.style.display='block';}
-  else{ctxEl.style.display='none';}
-  document.getElementById('pinModal').classList.add('open');
-}
-
-function cancelPin() {
-  // If a bonus was set pending, unset it
-  if(pinMode==='verify' && pendingKey && !pendingKey.startsWith('bedroom_')){
-    delete state.bonusPending[pendingKey];
-    pendingKey=null; saveState(); render();
-  }
-  pendingKey=null;
-  closeModal('pinModal');
-}
-
-function pinPress(key) {
-  if(key==='back') pinBuffer=pinBuffer.slice(0,-1);
-  else if(key==='clear') pinBuffer='';
-  else if(pinBuffer.length<4) pinBuffer+=key;
+function openPIN(mode,ctx){ pinMode=mode; pinBuffer=''; updatePinDots(); document.getElementById('pinError').textContent=''; const ctxEl=document.getElementById('pinContext'); if(ctx){ctxEl.textContent=ctx;ctxEl.style.display='block';}else{ctxEl.style.display='none';} document.getElementById('pinModal').classList.add('open'); }
+function cancelPin(){ if(pinMode==='verify'&&pendingKey&&!pendingKey.startsWith('bedroom_')){ delete state.bonusPending[pendingKey]; pendingKey=null; saveState(); render(); } pendingKey=null; closeModal('pinModal'); }
+function pinPress(key){
+  if(key==='back')pinBuffer=pinBuffer.slice(0,-1);
+  else if(key==='clear')pinBuffer='';
+  else if(pinBuffer.length<4)pinBuffer+=key;
   updatePinDots();
-  if(pinBuffer.length===4){
-    setTimeout(()=>{
-      if(pinBuffer===state.pin){
-        closeModal('pinModal');
-        if(pinMode==='admin') openAdmin();
-        else verifyConfirmed();
-      } else {
-        document.getElementById('pinError').textContent='❌ Wrong PIN, try again';
-        if(pinMode==='verify' && pendingKey && !pendingKey.startsWith('bedroom_')){
-          delete state.bonusPending[pendingKey];
-          pendingKey=null; saveState(); render();
-        }
-        pinBuffer=''; updatePinDots();
-      }
-    },200);
-  }
+  if(pinBuffer.length===4){ setTimeout(()=>{ if(pinBuffer===state.pin){ closeModal('pinModal'); if(pinMode==='admin')openAdmin(); else verifyConfirmed(); } else { document.getElementById('pinError').textContent='❌ Wrong PIN, try again'; if(pinMode==='verify'&&pendingKey&&!pendingKey.startsWith('bedroom_')){ delete state.bonusPending[pendingKey]; pendingKey=null; saveState(); render(); } pinBuffer=''; updatePinDots(); } },200); }
 }
-
-function updatePinDots(){
-  for(let i=0;i<4;i++) document.getElementById(`pd${i}`).classList.toggle('filled',i<pinBuffer.length);
-}
+function updatePinDots(){ for(let i=0;i<4;i++) document.getElementById(`pd${i}`).classList.toggle('filled',i<pinBuffer.length); }
 
 function verifyConfirmed(){
-  if(!pendingKey) return;
+  if(!pendingKey)return;
   if(pendingKey.startsWith('bedroom_')){
     const kid=pendingKey.replace('bedroom_','');
     state.bedroomAwarded[kid]=true;
-    state.totalStars[kid]=(state.totalStars[kid]||0)+3;
+    updateStars(kid,10);
   } else {
     const [bonusId,kid]=pendingKey.split('_');
     const chore=bonusChores.find(b=>b.id===bonusId);
-    if(chore){
-      state.bonusDone[pendingKey]=true;
-      delete state.bonusPending[pendingKey];
-      state.totalStars[kid]=(state.totalStars[kid]||0)+chore.points;
-    }
+    if(chore){ state.bonusDone[pendingKey]=true; delete state.bonusPending[pendingKey]; updateStars(kid,chore.points); }
   }
   pendingKey=null; saveState(); render();
 }
 
 // ── ADMIN ────────────────────────────────────────────────────
-function openAdmin(){
-  document.getElementById('adminSamTotal').textContent=state.totalStars.sam+' ⭐';
-  document.getElementById('adminIndyTotal').textContent=state.totalStars.indy+' ⭐';
-  renderVerifyQueue();
-  document.getElementById('adminModal').classList.add('open');
-}
-
+function openAdmin(){ document.getElementById('adminSamTotal').textContent=state.totalStars.sam+' ⭐'; document.getElementById('adminIndyTotal').textContent=state.totalStars.indy+' ⭐'; renderVerifyQueue(); document.getElementById('adminModal').classList.add('open'); }
 function renderVerifyQueue(){
   const el=document.getElementById('verifyQueue');
   const pending=Object.keys(state.bonusPending).filter(k=>state.bonusPending[k]);
   if(pending.length===0){el.innerHTML='<div class="no-verify">Nothing waiting ✓</div>';return;}
   el.innerHTML='';
-  pending.forEach(key=>{
-    const [bonusId,kid]=key.split('_');
-    const chore=bonusChores.find(b=>b.id===bonusId); if(!chore)return;
-    const d=document.createElement('div'); d.className='verify-item';
-    d.innerHTML=`<span>${kid==='sam'?'🦕 Sam':'🦄 Indy'}: ${chore.emoji} ${chore.label} (+${chore.points}⭐)</span>
-      <button class="v-approve" onclick="approveBonus('${key}')">✓ Yes</button>
-      <button class="v-deny" onclick="denyBonus('${key}')">✕ No</button>`;
-    el.appendChild(d);
-  });
+  pending.forEach(key=>{ const [bonusId,kid]=key.split('_'); const chore=bonusChores.find(b=>b.id===bonusId); if(!chore)return; const d=document.createElement('div'); d.className='verify-item'; d.innerHTML=`<span>${kid==='sam'?'🦕 Sam':'🦄 Indy'}: ${chore.emoji} ${chore.label} (+${chore.points}⭐)</span><button class="v-approve" onclick="approveBonus('${key}')">✓ Yes</button><button class="v-deny" onclick="denyBonus('${key}')">✕ No</button>`; el.appendChild(d); });
 }
-
-function approveBonus(key){
-  const [bonusId,kid]=key.split('_');
-  const chore=bonusChores.find(b=>b.id===bonusId); if(!chore)return;
-  state.bonusDone[key]=true; delete state.bonusPending[key];
-  state.totalStars[kid]=(state.totalStars[kid]||0)+chore.points;
-  saveState(); render();
-  document.getElementById('adminSamTotal').textContent=state.totalStars.sam+' ⭐';
-  document.getElementById('adminIndyTotal').textContent=state.totalStars.indy+' ⭐';
-  renderVerifyQueue();
-}
-
-function denyBonus(key){
-  delete state.bonusPending[key]; delete state.bonusDone[key];
-  saveState(); render(); renderVerifyQueue();
-}
-
-function addExtraChore(){
-  const label=document.getElementById('extraLabel').value.trim();
-  const kid=document.getElementById('extraKid').value;
-  const session=document.getElementById('extraSession').value;
-  if(!label)return;
-  state.extraChores.push({id:'ex_'+Date.now(),label,kid,session,points:3,done:false,extra:true});
-  document.getElementById('extraLabel').value='';
-  saveState(); render();
-}
-
-function resetStars(kid){
-  if(confirm(`Reset ${kid}'s stars to 0?`)){
-    state.totalStars[kid]=0; saveState(); render();
-    document.getElementById('adminSamTotal').textContent=state.totalStars.sam+' ⭐';
-    document.getElementById('adminIndyTotal').textContent=state.totalStars.indy+' ⭐';
-  }
-}
-
-function resetToday(){
-  if(confirm("Reset all of today's chores?")){
-    state.done={}; state.bonusDone={}; state.bonusPending={}; state.bedroomAwarded={};
-    state.extraChores=state.extraChores.map(e=>({...e,done:false}));
-    saveState(); render();
-  }
-}
-
-function changePIN(){
-  const val=document.getElementById('newPIN').value.trim();
-  if(!/^\d{4}$/.test(val)){alert('Please enter exactly 4 digits.');return;}
-  state.pin=val; saveState();
-  document.getElementById('newPIN').value='';
-  alert('PIN updated! ✓');
-}
-
+function approveBonus(key){ const [bonusId,kid]=key.split('_'); const chore=bonusChores.find(b=>b.id===bonusId); if(!chore)return; state.bonusDone[key]=true; delete state.bonusPending[key]; updateStars(kid,chore.points); document.getElementById('adminSamTotal').textContent=state.totalStars.sam+' ⭐'; document.getElementById('adminIndyTotal').textContent=state.totalStars.indy+' ⭐'; renderVerifyQueue(); }
+function denyBonus(key){ delete state.bonusPending[key]; delete state.bonusDone[key]; saveState(); render(); renderVerifyQueue(); }
+function addExtraChore(){ const label=document.getElementById('extraLabel').value.trim(); const kid=document.getElementById('extraKid').value; const session=document.getElementById('extraSession').value; if(!label)return; state.extraChores.push({id:'ex_'+Date.now(),label,kid,session,points:3,done:false,extra:true}); document.getElementById('extraLabel').value=''; saveState(); render(); }
+function resetStars(kid){ if(confirm(`Reset ${kid}'s stars to 0?`)){ state.totalStars[kid]=0; saveState(); render(); pushToSheets(kid,0); document.getElementById('adminSamTotal').textContent=state.totalStars.sam+' ⭐'; document.getElementById('adminIndyTotal').textContent=state.totalStars.indy+' ⭐'; } }
+function resetToday(){ if(confirm("Reset all of today's chores?")){ state.done={}; state.bonusDone={}; state.bonusPending={}; state.bedroomAwarded={}; state.extraChores=state.extraChores.map(e=>({...e,done:false})); saveState(); render(); } }
+function changePIN(){ const val=document.getElementById('newPIN').value.trim(); if(!/^\d{4}$/.test(val)){alert('Please enter exactly 4 digits.');return;} state.pin=val; saveState(); document.getElementById('newPIN').value=''; alert('PIN updated! ✓'); }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-overlay').forEach(el=>{
-  el.addEventListener('click',e=>{ if(e.target===el){ if(el.id==='pinModal') cancelPin(); else closeModal(el.id); }});
-});
+document.querySelectorAll('.modal-overlay').forEach(el=>{ el.addEventListener('click',e=>{ if(e.target===el){ if(el.id==='pinModal')cancelPin(); else closeModal(el.id); }}); });
 
+// ── INIT ─────────────────────────────────────────────────────
 render();
+fetchSheets();
 </script>
 </body>
 </html>
