@@ -542,46 +542,41 @@ let pendingKey = null;
 let sheetsData = { totals:{sam:0,indy:0}, daily:[] };
 let syncOk = false;
 
-// ── GOOGLE SHEETS ────────────────────────────────────────────
-async function fetchSheets() {
+// ── GOOGLE SHEETS (JSONP to bypass CORS) ─────────────────────
+function fetchSheets() {
   setSyncStatus('loading','Syncing with Google Sheets...');
-  try {
-    const res = await fetch(SHEETS_URL, {method:'GET', redirect:'follow'});
-    const data = await res.json();
-    if (data.totals) {
-      sheetsData.totals = {
-        sam: Number(data.totals.sam)||0,
-        indy: Number(data.totals.indy)||0
-      };
-    }
-    if (data.daily) sheetsData.daily = data.daily;
-    syncOk = true;
-    setSyncStatus('ok','Synced with Google Sheets ✓');
-    // Use sheets totals as the source of truth
-    state.totalStars.sam = sheetsData.totals.sam;
-    state.totalStars.indy = sheetsData.totals.indy;
-    saveState();
-    render();
-    if (currentSession==='scoreboard') renderScoreboard();
-  } catch(e) {
-    setSyncStatus('err','Could not reach Google Sheets');
-  }
+  jsonpCall(SHEETS_URL + '?callback=handleSheetData');
 }
 
-async function pushToSheets(kid, stars) {
-  try {
-    await fetch(SHEETS_URL, {
-      method:'POST',
-      redirect:'follow',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({kid, stars})
-    });
-    syncOk=true;
-    setSyncStatus('ok','Saved to Google Sheets ✓');
-    setTimeout(()=>fetchSheets(), 800);
-  } catch(e) {
-    setSyncStatus('err','Could not save — will retry');
+function handleSheetData(data) {
+  if (data.totals) {
+    sheetsData.totals = {
+      sam: Number(data.totals.sam)||0,
+      indy: Number(data.totals.indy)||0
+    };
   }
+  if (data.daily) sheetsData.daily = data.daily;
+  syncOk = true;
+  setSyncStatus('ok','Synced with Google Sheets ✓');
+  state.totalStars.sam = sheetsData.totals.sam;
+  state.totalStars.indy = sheetsData.totals.indy;
+  saveState();
+  render();
+  if (currentSession==='scoreboard') renderScoreboard();
+}
+
+function jsonpCall(url) {
+  const old = document.getElementById('jsonpScript');
+  if (old) old.remove();
+  const s = document.createElement('script');
+  s.id = 'jsonpScript';
+  s.src = url;
+  s.onerror = () => setSyncStatus('err','Could not reach Google Sheets');
+  document.body.appendChild(s);
+}
+
+function pushToSheets(kid, stars) {
+  jsonpCall(SHEETS_URL + `?callback=handleSheetData&kid=${kid}&stars=${stars}&action=update`);
 }
 
 function setSyncStatus(state, text) {
